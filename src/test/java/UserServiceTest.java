@@ -1,28 +1,24 @@
 import jm.task.core.jdbc.dao.UserDao;
-import jm.task.core.jdbc.dao.UserDaoJDBCImpl;
+import jm.task.core.jdbc.dao.UserDaoHibernateImpl;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.service.UserService;
 import jm.task.core.jdbc.service.UserServiceImpl;
 import jm.task.core.jdbc.util.Util;
+import org.hibernate.SessionFactory;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
-import java.sql.Connection;
-import java.sql.SQLException;
+
 import java.util.List;
 
 public class UserServiceTest {
-    private static Connection connection;
+    private static SessionFactory sessionFactory;
     private final UserService userService = createUserService();
 
     private static UserService createUserService() {
-        try {
-            connection = Util.getConnection();
-            UserDao userDao = new UserDaoJDBCImpl(connection);
-            return new UserServiceImpl(userDao);
-        } catch (SQLException e){
-            throw new RuntimeException(e);
-        }
+        sessionFactory = Util.getSessionFactory();
+        UserDao userDao = new UserDaoHibernateImpl(sessionFactory);
+        return new UserServiceImpl(userDao);
     }
 
     private final String testName = "Ivan";
@@ -116,8 +112,10 @@ public class UserServiceTest {
     }
 
     @AfterClass
-    public static void tearDown() throws SQLException {
-        connection.close();
+    public static void tearDown() {
+        if (sessionFactory != null) {
+            sessionFactory.close();
+        }
     }
 
 }

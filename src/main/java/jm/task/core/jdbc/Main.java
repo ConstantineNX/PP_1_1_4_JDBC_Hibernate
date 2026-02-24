@@ -1,34 +1,29 @@
 package jm.task.core.jdbc;
 
-import jm.task.core.jdbc.dao.UserDao;
-import jm.task.core.jdbc.dao.UserDaoJDBCImpl;
-import jm.task.core.jdbc.service.UserService;
-import jm.task.core.jdbc.service.UserServiceImpl;
+import jm.task.core.jdbc.dao.UserDaoHibernateImpl;
+import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
-import java.sql.Connection;
+import org.hibernate.SessionFactory;
+
 
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         // реализуйте алгоритм здесь
-        Connection connection = Util.getConnection();
-        UserDao userDao = new UserDaoJDBCImpl(connection);
-        UserService userService = new UserServiceImpl(userDao);
-        userService.createUsersTable();
+        SessionFactory sessionFactory = Util.getSessionFactory();
+        UserDaoHibernateImpl userDao = new UserDaoHibernateImpl(sessionFactory);
+        userDao.cleanUsersTable();
 
-        userService.saveUser("Ivan", "Ivanov", (byte) 32);
-        userService.saveUser("Petr", "Petrov", (byte) 18);
-        userService.saveUser("Serg", "Olov", (byte) 17);
-        userService.saveUser("Karmen", "Ivanova", (byte) 43);
-        userService.saveUser("Ivanna", "Petrova", (byte) 34);
-        userService.saveUser("Alex", "Alexeev", (byte) 16);
-        userService.saveUser("Igor", "Livanov", (byte) 55);
+        userDao.saveUser("Petr", "Petrov", (byte) 23);
+        userDao.saveUser("Sergey", "Sergeev", (byte) 33);
+        userDao.saveUser("Victor", "Graf", (byte) 93);
+        userDao.saveUser("Igor", "Ignorov", (byte) 23);
 
-        userService.removeUserById(3);
-        userService.getAllUsers();
-        userService.cleanUsersTable();
-        userService.dropUsersTable();
+        for (User user : userDao.getAllUsers()) {
+            System.out.println(user.getName() + " " + user.getLastName() + "-" + user.getAge());
+        }
 
-
+        userDao.cleanUsersTable();
+        userDao.dropUsersTable();
 
 
     }

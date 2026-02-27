@@ -1,6 +1,7 @@
 package jm.task.core.jdbc.dao;
 
 import jm.task.core.jdbc.model.User;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class UserDaoHibernateImpl implements UserDao {
-    SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory;
 
     public UserDaoHibernateImpl(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
@@ -21,13 +22,13 @@ public class UserDaoHibernateImpl implements UserDao {
             tx = session.beginTransaction();
             action.accept(session);
             tx.commit();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (HibernateException e) {
+            System.out.println("Ошибка в Hibernate: " + e.getMessage());
             if (tx != null) {
                 try {
                     tx.rollback();
-                } catch (Exception e1) {
-                    System.out.println(e1.getMessage());
+                } catch (HibernateException e1) {
+                    System.out.println("Ошибка отката транзакции: " + e1.getMessage());
                 }
             }
         }
@@ -58,6 +59,7 @@ public class UserDaoHibernateImpl implements UserDao {
         executeInTransaction(session -> {
             User user = new User(name, lastName, age);
             session.save(user);
+            System.out.println("User с именем - " + name + " добавлен в базу данных");
         });
     }
 
@@ -75,8 +77,11 @@ public class UserDaoHibernateImpl implements UserDao {
     public List<User> getAllUsers() {
         try (Session session = sessionFactory.openSession()) {
             return session.createQuery("from User", User.class).list();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (HibernateException e) {
+            System.out.println("Ошибка при получении списка пользователей: " + e.getMessage());
+            return Collections.emptyList();
+        } catch (Exception ex) {
+            System.out.println("Другая ошибка при получении списка пользователей: " + ex.getMessage());
             return Collections.emptyList();
         }
     }

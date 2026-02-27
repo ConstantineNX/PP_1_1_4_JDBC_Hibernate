@@ -11,7 +11,6 @@ public class Main {
         // реализуйте алгоритм здесь
         SessionFactory sessionFactory = Util.getSessionFactory();
         UserDaoHibernateImpl userDao = new UserDaoHibernateImpl(sessionFactory);
-        userDao.cleanUsersTable();
 
         userDao.saveUser("Petr", "Petrov", (byte) 23);
         userDao.saveUser("Sergey", "Sergeev", (byte) 33);
@@ -25,6 +24,6 @@ public class Main {
         userDao.cleanUsersTable();
         userDao.dropUsersTable();
 
-
+        Util.closeSessionFactory();
     }
 }

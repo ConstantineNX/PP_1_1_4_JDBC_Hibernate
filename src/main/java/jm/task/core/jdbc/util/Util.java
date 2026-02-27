@@ -6,12 +6,13 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-
 import java.util.Properties;
 
 public class Util {
     // реализуйте настройку соеденения с БД
     private static SessionFactory sessionFactory;
+
+    private Util() {}
 
     public static SessionFactory getSessionFactory() {
         if (sessionFactory == null) {
@@ -19,22 +20,17 @@ public class Util {
                 Configuration config = new Configuration();
                 config.addProperties(createHibernateProperties());
                 config.addAnnotatedClass(User.class);
-
                 StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
                         .applySettings(config.getProperties()).build();
-
                 sessionFactory = new MetadataSources(registry)
                         .addAnnotatedClass(User.class)
                         .buildMetadata().buildSessionFactory();
-
-
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
         return sessionFactory;
     }
-
     private static Properties createHibernateProperties() {
         Properties properties = new Properties();
         properties.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
@@ -44,5 +40,9 @@ public class Util {
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         return properties;
     }
-
+    public static void closeSessionFactory() {
+        if (sessionFactory != null && sessionFactory.isClosed()) {
+            sessionFactory.close();
+        }
+    }
 }

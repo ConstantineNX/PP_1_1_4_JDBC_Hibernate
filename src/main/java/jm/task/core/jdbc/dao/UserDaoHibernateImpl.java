@@ -92,5 +92,6 @@ public class UserDaoHibernateImpl implements UserDao {
         executeInTransaction(session -> {
             session.createNativeQuery(sql).executeUpdate();
         });
+
     }
 }

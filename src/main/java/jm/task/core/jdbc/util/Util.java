@@ -37,11 +37,12 @@ public class Util {
         properties.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/testdb");
         properties.setProperty("hibernate.connection.username", "root");
         properties.setProperty("hibernate.connection.password", "root");
-        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
+        properties.setProperty("hibernate.hbm2ddl.auto", "update");
         return properties;
     }
     public static void closeSessionFactory() {
-        if (sessionFactory != null && sessionFactory.isClosed()) {
+        if (sessionFactory != null && !sessionFactory.isClosed()) {
             sessionFactory.close();
         }
     }

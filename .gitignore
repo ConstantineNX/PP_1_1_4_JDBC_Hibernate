@@ -1,0 +1,32 @@
+# IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Maven/Gradle
+target/
+build/
+*.jar
+*.war
+*.ear
+
+# Logs
+*.log
+*.log.*
+
+# Compiled files
+*.class
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Temp files
+*.tmp
+*.temp
+*~
+
+# Local configs (если есть)
+*.local
+application-local.properties
